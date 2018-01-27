@@ -42,7 +42,6 @@ function handler.connect(fd, ipaddr)
 end
 
 function handler.message(fd, msg, sz)
-	print("rev msg " .. fd .. "  " .. sz);
   	local c = connection[fd]
 	local agent = c.agent
 	if agent then

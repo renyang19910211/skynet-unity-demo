@@ -59,7 +59,6 @@ skynet.register_protocol {
 		return host:dispatch(msg, sz)
 	end,
 	dispatch = function (_, _, type, ...)
-		print("rev msg ", type)
 		if type == "REQUEST" then
 			-- print(type)
 			local ok, result  = pcall(request, ...)

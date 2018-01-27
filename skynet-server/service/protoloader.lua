@@ -12,9 +12,7 @@ skynet.start(function()
 	local handle = io.open(PROTOS_FILE, "r")
 	local ret = handle:read("*a")
 	handle:close()
-	-- print(ret)
 
 	sprotoloader.save(sprotoparser.parse(ret), 1)
-	-- sprotoloader.save(proto.s2c, 2)
 	-- don't call skynet.exit() , because sproto.core may unload and the global slot become invalid
 end)

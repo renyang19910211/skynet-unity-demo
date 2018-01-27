@@ -59,6 +59,10 @@ public class ClientNet : SingletonBehaviour<ClientNet>
             if (callback != null) _responseDict.Add(_session, callback);
             _session += 1;
         }
+        else
+        {
+            Debug.LogError("please connect server !");
+        }
     }
 
     //收到消息

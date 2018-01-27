@@ -141,8 +141,6 @@ public class NetTransporter
         }
     }
 
-   
-
     public void Send(byte[] bytes)
     {
         try

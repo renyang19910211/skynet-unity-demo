@@ -14,8 +14,8 @@ public class NewBehaviourScript : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-        ClientNet.inst.Connect("127.0.0.1", 8888, OnConnect);
-	}
+        ClientNet.inst.Connect("127.0.0.1", 8899, OnConnect);
+    }
 
 	private void OnConnect(Sproto.SprotoTypeBase _)
 	{
