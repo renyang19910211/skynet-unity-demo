@@ -7,10 +7,6 @@ using Sproto;
 
 public class NewBehaviourScript : MonoBehaviour 
 {
-	private NetTransporter _client;
-	private SprotoRpc _sprotoRpc;
-	private SprotoRpc.RpcRequest _host;
-
 	// Use this for initialization
 	void Start () 
 	{
