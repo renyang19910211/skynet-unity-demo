@@ -10,6 +10,7 @@ public class NewBehaviourScript : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
+        GameObject.Destroy(gameObject);
         ClientNet.inst.Connect("127.0.0.1", 8899, OnConnect);
     }
 
