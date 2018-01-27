@@ -16,7 +16,7 @@ public class SprotoProcesser
 
     public SprotoProcesser(Socket socket, Action<SprotoRpc.RpcInfo> onEvent)
     {
-        _sprotoRpc = new SprotoRpc();
+        _sprotoRpc = new SprotoRpc(Protocol.Instance);
 		_host = _sprotoRpc.Attach(Protocol.Instance);
         _onEvent = onEvent;
 

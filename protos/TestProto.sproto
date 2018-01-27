@@ -9,39 +9,29 @@ handshake 1 {
 	}
 }
 
-get 2 {
-	request {
-		what 0 : string
-	}
-	response {
-		result 0 : string
-	}
-}
-
-set 3 {
-	request {
-		what 0 : string
-		value 1 : string
-	}
-}
-
-quit 4 {
-
-}
-
-register_account 5 {
+register_account 2 {
 	request {
 		account 0 : string
 		password 1 : string
 	}
 	response {
-		msg 0 : string
+		msg 0 : boolean
 	}
 }
 
-heartbeat 6 {}
+heartbeat 3 {}
 
-test_msg 7 {
+login_account 4 {
+	request {
+		account 0 : string
+		password 1 : string
+	}
+	response {
+		result 0 : boolean
+	}
+}
+
+chat_msg 5 {
 	request {
 		msg 0 : string
 	}

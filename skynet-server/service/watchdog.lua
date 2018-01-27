@@ -37,7 +37,13 @@ function SOCKET.warning(fd, size)
 end
 
 function SOCKET.data(fd, msg)
-	
+
+end
+
+function CMD.dispatch_clients(fd, msg)
+	for k,v in pairs(agent) do
+		skynet.send(v, "lua", "send_request", msg)
+	end
 end
 
 function CMD.start(conf)

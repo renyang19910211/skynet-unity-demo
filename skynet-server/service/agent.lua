@@ -14,8 +14,23 @@ local client_fd
 
 function REQUEST:register_account()
 	print("regitster ", self.account)
-	skynet.call("database", "lua", "create", self.account, self.password)
-	return {msg = "register success"}
+	local result = skynet.call("database", "lua", "create", self.account, self.password)
+	return {msg = result}
+end
+
+function REQUEST:login_account()
+	print("login ", self.account)
+	local result = skynet.call("database", "lua", "get_db_account", self.account, self.password)
+	print("login result ", result)
+	if result then
+		return {result = (result.account == self.account) and (result.password == self.password)}
+	else
+		return {result = false}
+	end
+end
+
+function REQUEST:chat_msg()
+	skynet.send(WATCHDOG, "lua", "dispatch_clients", client_fd, send_request("chat_msg", {msg = self.msg}))
 end
 
 function REQUEST:get()
@@ -93,13 +108,16 @@ function CMD.start(conf)
 
 	client_fd = fd
 	skynet.call(gate, "lua", "forward", fd)
-	-- send_package(send_request ("test_msg", {msg = "helloe world"}))
 end
 
 function CMD.disconnect()
 	-- todo: do something before exit
 	print(client_fd  .. " disconnect");
 	skynet.exit()
+end
+
+function CMD.send_request(msg)
+	send_package(msg)
 end
 
 skynet.start(function()

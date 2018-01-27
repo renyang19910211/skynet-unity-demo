@@ -15,12 +15,13 @@ public class ClientNet : SingletonBehaviour<ClientNet>
     private struct Event
     {
         public Action<SprotoTypeBase> callback;
-        public SprotoTypeBase obj;
+        public SprotoRpc.RpcInfo? sinfo;
 
-        public Event(Action<SprotoTypeBase> call, SprotoTypeBase o)
+        public Event(Action<SprotoTypeBase> callback, SprotoRpc.RpcInfo? sinfo)
         {
-            callback = call;
-            obj = o;
+            this.callback = callback;
+            this.sinfo = sinfo;
+
         }
     }
 
@@ -30,6 +31,9 @@ public class ClientNet : SingletonBehaviour<ClientNet>
     private Dictionary<long, Action<SprotoTypeBase>> _responseDict = new Dictionary<long, Action<SprotoTypeBase>>();
     //消息队列,使消息在主线程中抛出
     private Queue<Event> _eventQueue = new Queue<Event>();
+    //推送消息监听,临时
+    private Dictionary<int, List<Action<SprotoTypeBase>>> _pushEventDict = new Dictionary<int, List<Action<SprotoTypeBase>>>();
+
     private Socket _socket;
     //使用sproto协议
     private SprotoProcesser _sprotoProcesser;
@@ -65,13 +69,24 @@ public class ClientNet : SingletonBehaviour<ClientNet>
         }
     }
 
+    public void AddListener(int tag, Action<SprotoTypeBase> callback)
+    {
+        List<Action<SprotoTypeBase>> list;
+        _pushEventDict.TryGetValue(tag, out list);
+        if (list == null) list = new List<Action<SprotoTypeBase>>();
+        list.Add(callback);
+        _pushEventDict[tag] = list;
+    }
+
     //收到消息
     private void OnEvent(SprotoRpc.RpcInfo sinfo)
     {
+        Debug.Log("on recevie event " + sinfo.tag);
+
         //推送消息
         if (sinfo.type == SprotoRpc.RpcType.REQUEST)
         {
-            _eventQueue.Enqueue(new Event(null, sinfo.requestObj));
+            _eventQueue.Enqueue(new Event(null, sinfo));
         }
         //回返消息
         else
@@ -80,7 +95,7 @@ public class ClientNet : SingletonBehaviour<ClientNet>
             {
                 Action<SprotoTypeBase> call;
                 _responseDict.TryGetValue(sinfo.session.Value, out call);
-                if (call != null) _eventQueue.Enqueue(new Event(call, sinfo.responseObj));
+                if (call != null) _eventQueue.Enqueue(new Event(call, sinfo));
             }
         }
     }
@@ -104,11 +119,20 @@ public class ClientNet : SingletonBehaviour<ClientNet>
         while (_eventQueue.Count > 0)
         {
             Event evt = _eventQueue.Dequeue();
-            if (evt.callback != null) evt.callback.Invoke(evt.obj);
+            if (evt.callback != null) evt.callback.Invoke(evt.sinfo != null ? evt.sinfo.Value.responseObj : null);
             //推送消息
             else
             {
+                List<Action<SprotoTypeBase>> list;
+                _pushEventDict.TryGetValue(evt.sinfo.Value.tag.Value, out list);
 
+                if (list != null)
+                {
+                    foreach(Action<SprotoTypeBase> each in list)
+                    {
+                        each.Invoke(evt.sinfo.Value.requestObj);
+                    }
+                }
             }
         }
     }

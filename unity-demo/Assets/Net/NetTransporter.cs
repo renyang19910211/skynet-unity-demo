@@ -19,8 +19,6 @@ public class NetTransporter
     private byte[] _buffer = new byte[MAX_READ]; //用于接收
 
     private byte[] _byteBuffer; //用于缓存
-    private ushort _bodyLength; //消息体长度
-    private int _bufferLength = 0; //当前缓存长度
     private int _bufferOffset = 0; //缓存偏移
 
     private Action<byte[]> _eventHandle; //消息处理回调
