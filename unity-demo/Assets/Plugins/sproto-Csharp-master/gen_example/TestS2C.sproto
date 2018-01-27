@@ -1,0 +1,7 @@
+heartbeat 1 {}
+
+test_msg 2 {
+	request {
+		msg 0 : string
+	}
+}
