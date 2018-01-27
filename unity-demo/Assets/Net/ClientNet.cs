@@ -25,7 +25,7 @@ public class ClientNet : SingletonBehaviour<ClientNet>
     }
 
     //会话id
-    private long _session = 0; 
+    private long _session = 0;
     //response
     private Dictionary<long, Action<SprotoTypeBase>> _responseDict = new Dictionary<long, Action<SprotoTypeBase>>();
     //消息队列,使消息在主线程中抛出
@@ -38,7 +38,7 @@ public class ClientNet : SingletonBehaviour<ClientNet>
     //连接
     public void Connect(string ip, int port, Action<SprotoTypeBase> onConnect)
     {
-        Thread thread = new Thread(new ThreadStart(()=>
+        Thread thread = new Thread(new ThreadStart(() =>
         {
             _onConnect = onConnect;
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -48,10 +48,10 @@ public class ClientNet : SingletonBehaviour<ClientNet>
             _socket.ReceiveTimeout = 1000;
             _socket.BeginConnect(ipEndPoint, new AsyncCallback(OnConnect), null);
         }));
-		thread.Start ();
+        thread.Start();
     }
 
-	public void Send<TProto>(SprotoTypeBase obj = null, Action<SprotoTypeBase> callback = null)
+    public void Send<TProto>(SprotoTypeBase obj = null, Action<SprotoTypeBase> callback = null)
     {
         if (_sprotoProcesser != null)
         {
@@ -83,9 +83,16 @@ public class ClientNet : SingletonBehaviour<ClientNet>
 
     private void OnConnect(IAsyncResult result)
     {
-        _socket.EndConnect(result);
-        _sprotoProcesser = new SprotoProcesser(_socket, OnEvent);
-        _eventQueue.Enqueue(new Event(_onConnect, null));
+        try
+        {
+            _socket.EndConnect(result);
+            _sprotoProcesser = new SprotoProcesser(_socket, OnEvent);
+            _eventQueue.Enqueue(new Event(_onConnect, null));
+        }
+        catch (SocketException e)
+        {
+            Debug.Log(e);
+        }
     }
 
     private void Update()

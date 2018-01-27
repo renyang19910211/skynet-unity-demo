@@ -12,15 +12,15 @@ namespace sprotoCsharp
 
 		public override void run() {
 			SprotoRpc client = new SprotoRpc ();
-			SprotoRpc service = new SprotoRpc (Protocol.Instance);
-			SprotoRpc.RpcRequest clientRequest = client.Attach (Protocol.Instance);
+			SprotoRpc service = new SprotoRpc (ProtocolExample.Instance);
+			SprotoRpc.RpcRequest clientRequest = client.Attach (ProtocolExample.Instance);
 
 			// ===============foobar=====================
 			// request
 
 			SprotoType.foobar.request obj = new SprotoType.foobar.request ();
 			obj.what = "foo";
-			byte[] req = clientRequest.Invoke<Protocol.foobar> (obj, 1);
+			byte[] req = clientRequest.Invoke<ProtocolExample.foobar> (obj, 1);
 			assert (req, new byte[] {0X55, 0X02, 0X04, 0X04, 0X01, 0Xc4, 0X03, 0X66, 0X6f, 0X01, 0X6f});
 
 			// dispatch
@@ -45,13 +45,13 @@ namespace sprotoCsharp
 	
 			// ================foo====================
 			// request
-			req =  clientRequest.Invoke<Protocol.foo> (null, 2);
+			req =  clientRequest.Invoke<ProtocolExample.foo> (null, 2);
 			assert (req, new byte[] {0X15, 0X02, 0X06, 0X06});
 
 			// dispatch
 			sinfo = service.Dispatch (req);
 			assert (sinfo.type == SprotoRpc.RpcType.REQUEST);
-			assert (sinfo.tag == Protocol.foo.Tag);
+			assert (sinfo.tag == ProtocolExample.foo.Tag);
 			assert (sinfo.requestObj == null);
 
 			// response
@@ -68,19 +68,19 @@ namespace sprotoCsharp
 
 			// ================bar====================
 			// request
-			req = clientRequest.Invoke<Protocol.bar> ();
+			req = clientRequest.Invoke<ProtocolExample.bar> ();
 			assert (req, new byte[] { 0X05, 0X01, 0X08, });
 
 			// dispatch
 			sinfo = service.Dispatch (req);
 			assert (sinfo.type == SprotoRpc.RpcType.REQUEST);
 			assert (sinfo.requestObj == null);
-			assert (sinfo.tag == Protocol.bar.Tag);
+			assert (sinfo.tag == ProtocolExample.bar.Tag);
 			assert (sinfo.Response == null);
 
 			// ================blackhole====================
 			// request
-			req = clientRequest.Invoke<Protocol.blackhole> ();
+			req = clientRequest.Invoke<ProtocolExample.blackhole> ();
 			assert (req, new byte[]{ 0X05, 0X01, 0X0a });
 		}
 	}
