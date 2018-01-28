@@ -9,6 +9,9 @@ public class Protocol : ProtocolBase {
 		Protocol.SetProtocol<chat_msg> (chat_msg.Tag);
 		Protocol.SetRequest<SprotoType.chat_msg.request> (chat_msg.Tag);
 
+		Protocol.SetProtocol<chat_msgs> (chat_msgs.Tag);
+		Protocol.SetRequest<SprotoType.chat_msgs.request> (chat_msgs.Tag);
+
 		Protocol.SetProtocol<handshake> (handshake.Tag);
 		Protocol.SetResponse<SprotoType.handshake.response> (handshake.Tag);
 
@@ -26,6 +29,10 @@ public class Protocol : ProtocolBase {
 
 	public class chat_msg {
 		public const int Tag = 5;
+	}
+
+	public class chat_msgs {
+		public const int Tag = 6;
 	}
 
 	public class handshake {

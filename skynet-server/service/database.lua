@@ -1,6 +1,6 @@
 local mongo = require "skynet.db.mongo"
 local skynet = require "skynet"
-local db_account = require "db_account"
+local db_account = require "db.db_account"
 
 require "skynet.manager"	-- import skynet.register
 
@@ -26,7 +26,22 @@ function CMD.get_db_account(account, password)
 	if collection then
 		ret = collection:findOne({_id = account})
 	end
-	skynet.ret(skynet.pack(ret))
+	return ret
+end
+
+function CMD.save_chat(msg)
+	local collection = CMD.get_collection(DB_NAME , "chat")
+	local ret = collection:findOne({_id = "chat"}) or {}
+	local msgs = ret.msgs or {}
+	table.insert(msgs, msg)
+	ret.msgs = msgs
+	collection:update({_id = "chat"}, ret, true)
+end
+
+function CMD.get_chat()
+	local collection = CMD.get_collection(DB_NAME , "chat")
+	local ret = collection:findOne({_id = "chat"})
+	return ret.msgs
 end
 
 function CMD.create(account, password)
@@ -64,7 +79,7 @@ end
 skynet.start (function ()
     skynet.dispatch("lua", function (session, source, cmd, ...)
         local f = assert(CMD[cmd])
-        f(...)
+		skynet.ret(skynet.pack(f(...)))
     end)
 
     skynet.register("database")

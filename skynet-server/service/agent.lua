@@ -3,6 +3,7 @@ local netpack = require "skynet.netpack"
 local socket = require "skynet.socket"
 local sproto = require "sproto"
 local sprotoloader = require "sprotoloader"
+local route_handler = require "route_handler"
 
 local WATCHDOG
 local host
@@ -11,39 +12,6 @@ local send_request
 local CMD = {}
 local REQUEST = {}
 local client_fd
-
-function REQUEST:register_account()
-	print("regitster ", self.account)
-	local result = skynet.call("database", "lua", "create", self.account, self.password)
-	return {msg = result}
-end
-
-function REQUEST:login_account()
-	print("login ", self.account)
-	local result = skynet.call("database", "lua", "get_db_account", self.account, self.password)
-	print("login result ", result)
-	if result then
-		return {result = (result.account == self.account) and (result.password == self.password)}
-	else
-		return {result = false}
-	end
-end
-
-function REQUEST:chat_msg()
-	skynet.send(WATCHDOG, "lua", "dispatch_clients", client_fd, send_request("chat_msg", {msg = self.msg}))
-end
-
-function REQUEST:get()
-	print("get", self.what)
-	local r = skynet.call("SIMPLEDB", "lua", "get", self.what)
-	print("get result ", r)
-	return { result = r }
-end
-
-function REQUEST:set()
-	print("set", self.what, self.value)
-	local r = skynet.call("SIMPLEDB", "lua", "set", self.what, self.value)
-end
 
 function REQUEST:handshake()
 	return { msg = "Welcome to skynet, I will send heartbeat every 5 sec." }
@@ -54,9 +22,13 @@ function REQUEST:quit()
 end
 
 local function request(name, args, response)
-	local f = assert(REQUEST[name])
+	local f = REQUEST[name]
+	if not f then
+		f =	route_handler[name]
+	end
+	assert(f)
 
-	local r = f(args)
+	local r = f(args, client_fd)
 	if response then
 		return response(r)
 	end
@@ -116,8 +88,8 @@ function CMD.disconnect()
 	skynet.exit()
 end
 
-function CMD.send_request(msg)
-	send_package(msg)
+function CMD.send_request(name, args)
+	send_package(send_request(name, args))
 end
 
 skynet.start(function()

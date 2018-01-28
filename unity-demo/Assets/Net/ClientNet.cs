@@ -81,7 +81,7 @@ public class ClientNet : SingletonBehaviour<ClientNet>
     //收到消息
     private void OnEvent(SprotoRpc.RpcInfo sinfo)
     {
-        Debug.Log("on recevie event " + sinfo.tag);
+
 
         //推送消息
         if (sinfo.type == SprotoRpc.RpcType.REQUEST)

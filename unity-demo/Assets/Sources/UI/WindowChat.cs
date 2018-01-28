@@ -12,15 +12,29 @@ public class WindowChat : MonoBehaviour
     void Awake()
     {
         ClientNet.inst.AddListener(Protocol.chat_msg.Tag, OnChatEvent);
+        ClientNet.inst.AddListener(Protocol.chat_msgs.Tag, OnPushChat);
     }
 
     public void OnBtnSendClick()
     {
+        if (string.IsNullOrEmpty(inputChat.text)) return;
         SprotoType.chat_msg.request req = new SprotoType.chat_msg.request();
         req.msg = inputChat.text;
         ClientNet.inst.Send<Protocol.chat_msg>(req);
         inputChat.text = "";
     }
+
+    private void OnPushChat(SprotoTypeBase evt)
+    {
+        SprotoType.chat_msgs.request res = evt as SprotoType.chat_msgs.request;
+        foreach(string each in res.msgs)
+        {
+            Text item = GameObject.Instantiate(Item, Item.transform.parent, false);
+            item.text = each;
+            item.gameObject.SetActive(true);
+        }
+    }
+
 
     private void OnChatEvent(SprotoTypeBase evt)
     {
@@ -29,11 +43,4 @@ public class WindowChat : MonoBehaviour
         item.text = res.msg;
         item.gameObject.SetActive(true);
     }
-
-    // Use this for initialization
-    void Start()
-    {
-        Debug.Log("test start");
-    }
-
 }

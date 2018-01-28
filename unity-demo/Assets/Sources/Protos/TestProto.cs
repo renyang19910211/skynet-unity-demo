@@ -56,6 +56,56 @@ namespace SprotoType {
 	}
 
 
+	public class chat_msgs {
+	
+		public class request : SprotoTypeBase {
+			private static int max_field_count = 1;
+			
+			
+			private List<string> _msgs; // tag 0
+			public List<string> msgs {
+				get { return _msgs; }
+				set { base.has_field.set_field (0, true); _msgs = value; }
+			}
+			public bool HasMsgs {
+				get { return base.has_field.has_field (0); }
+			}
+
+			public request () : base(max_field_count) {}
+
+			public request (byte[] buffer) : base(max_field_count, buffer) {
+				this.decode ();
+			}
+
+			protected override void decode () {
+				int tag = -1;
+				while (-1 != (tag = base.deserialize.read_tag ())) {
+					switch (tag) {
+					case 0:
+						this.msgs = base.deserialize.read_string_list ();
+						break;
+					default:
+						base.deserialize.read_unknow_data ();
+						break;
+					}
+				}
+			}
+
+			public override int encode (SprotoStream stream) {
+				base.serialize.open (stream);
+
+				if (base.has_field.has_field (0)) {
+					base.serialize.write_string (this.msgs, 0);
+				}
+
+				return base.serialize.close ();
+			}
+		}
+
+
+	}
+
+
 	public class handshake {
 	
 		public class response : SprotoTypeBase {

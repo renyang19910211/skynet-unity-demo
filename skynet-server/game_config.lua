@@ -12,7 +12,7 @@ bootstrap = "snlua bootstrap"	--启动的第一个服务以及其启动参数。
 standalone = "0.0.0.0:2048"--如果把这个 skynet 进程作为主进程启动（skynet 可以由分布在多台机器上的多个进程构成网络），那么需要配置standalone 这一项，表示这个进程是主节点，它需要开启一个控制中心，监听一个端口，让其它节点接入。
 
 lua_cpath = skynet_root.."luaclib/?.so;"--将添加到 package.cpath 中的路径，供 require 调用。
-lua_path = skynet_root.."lualib/?.lua;"..skynet_root.."lualib/?/init.lua;"..root.."lua/db/?.lua;"..root.."lua/base/?.lua"--将添加到 package.path 中的路径，供 require 调用。
+lua_path = skynet_root.."lualib/?.lua;"..skynet_root.."lualib/?/init.lua;"..root.."lua/?.lua"--将添加到 package.path 中的路径，供 require 调用。
 luaservice = skynet_root .. "service/?.lua;" .. root .. "service/?.lua"--lua服务路径
 
 lualoader = skynet_root.."lualib/loader.lua" -- 用哪一段 lua 代码加载 lua 服务。通常配置为 lualib/loader.lua ，再由这段代码解析服务名称，进一步加载 lua 代码。snlua 会将下面几个配置项取出，放在初始化好的 lua 虚拟机的全局变量中。具体可参考实现。

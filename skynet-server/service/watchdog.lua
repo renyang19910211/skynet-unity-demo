@@ -1,4 +1,5 @@
 local skynet = require "skynet"
+require "skynet.manager"	-- import skynet.register
 
 local CMD = {}
 local SOCKET = {}
@@ -40,9 +41,9 @@ function SOCKET.data(fd, msg)
 
 end
 
-function CMD.dispatch_clients(fd, msg)
+function CMD.dispatch_clients(name, args)
 	for k,v in pairs(agent) do
-		skynet.send(v, "lua", "send_request", msg)
+		skynet.send(v, "lua", "send_request", name, args)
 	end
 end
 
@@ -72,6 +73,6 @@ skynet.start(function()
 			skynet.ret(skynet.pack(f(subcmd, ...)))
 		end
 	end)
-
+	skynet.register("watchdog")
 	gate = skynet.newservice("my_gate")
 end)

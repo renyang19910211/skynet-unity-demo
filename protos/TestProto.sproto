@@ -36,3 +36,9 @@ chat_msg 5 {
 		msg 0 : string
 	}
 }
+
+chat_msgs 6 {
+	request {
+		msgs 0 : *string
+	}
+}
